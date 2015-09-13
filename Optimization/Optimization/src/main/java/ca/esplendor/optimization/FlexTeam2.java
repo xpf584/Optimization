@@ -1,13 +1,13 @@
 package ca.esplendor.optimization;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by chenzheng on 15-09-10.
  */
-public class Team  {
+public class FlexTeam2 {
 
     private QB qb;
     private List<RB> rbList = new ArrayList<RB>();
@@ -19,67 +19,49 @@ public class Team  {
     private List<Player> teamMembers = new ArrayList<Player>();
 
     private final double budget = 60000;
-    private final int RB_SIZE = 2;
-    private final int WR_SIZE = 3;
+    private final int MAX_RB_SIZE = 3;
+    private final int MAX_WR_SIZE = 3;
 
-    public Team(){}
+    public FlexTeam2(){}
 
-    public static Team cloneTeam(Team toBeCloned) {
-        if (toBeCloned != null) {
-            Team newTeam = new Team();
-            newTeam.setQb(QB.clone(toBeCloned.getQb()));
-            newTeam.setDef(DEF.clone(toBeCloned.getDef()));
-            newTeam.setK(K.clone(toBeCloned.getK()));
-            newTeam.setTe(TE.clone(toBeCloned.getTe()));
-            List<RB> rbList = new ArrayList<RB>();
-            for (RB rb : toBeCloned.getRbList()) {
-                rbList.add(RB.clone(rb));
-            }
-            newTeam.setRbList(rbList);
 
-            List<WR> wrList = new ArrayList<WR>();
-            for (WR wr : toBeCloned.getWrList()) {
-                wrList.add(WR.clone(wr));
-            }
-            newTeam.setWrList(wrList);
+    public void updateRbMemberIfRequired(RB member) {
+        teamMembers.removeAll(rbList);
+        rbList.add(member);
+        Collections.sort(rbList, Player.DollarPerPointsComparator);
+        if (rbList.size() > MAX_RB_SIZE) {
 
-            List<Player> playerList = new ArrayList<Player>();
-            for (Player player : toBeCloned.getTeamMembers()) {
-                playerList.add(Player.clone(player));
-            }
-            newTeam.setTeamMembers(playerList);
-            return newTeam;
+            rbList = rbList.subList(0, MAX_RB_SIZE - 1);
         }
-        return null;
+        teamMembers.addAll(rbList);
     }
 
-    public void addRb(RB member) {
-        if (rbList.size() < RB_SIZE && !teamMembers.contains(member)) {
-            rbList.add(member);
-            teamMembers.add(member);
+    public void updateWrMemberIfRequired(WR member) {
+        teamMembers.removeAll(wrList);
+        wrList.add(member);
+        Collections.sort(wrList, Player.DollarPerPointsComparator);
+        if (wrList.size() > MAX_WR_SIZE) {
+            wrList = wrList.subList(0, MAX_WR_SIZE - 1);
         }
-    }
-
-    public void addWr(WR member) {
-        if (wrList.size() < WR_SIZE && !teamMembers.contains(member)) {
-            wrList.add(member);
-            teamMembers.add(member);
-        }
+        teamMembers.addAll(wrList);
     }
 
     public double getTeamCost() {
         double total = 0;
-        total += qb != null ? qb.getPrice() : 0;
-        for (RB rb : rbList) {
-            total += rb.getPrice();
+        if (!hasAllTeamMembers()) return total;
+        else {
+            total += qb != null ? qb.getPrice() : 0;
+            for (RB rb : rbList) {
+                total += rb.getPrice();
+            }
+            for (WR wr : wrList) {
+                total += wr.getPrice();
+            }
+            total += te != null ? te.getPrice() : 0;
+            total += k != null ? k.getPrice() : 0;
+            total += def != null ? def.getPrice(): 0;
+            return total;
         }
-        for (WR wr : wrList) {
-            total += wr.getPrice();
-        }
-        total += te != null ? te.getPrice() : 0;
-        total += k != null ? k.getPrice() : 0;
-        total += def != null ? def.getPrice(): 0;
-        return total;
     }
 
     public double getTeamProjectedPoints(){
@@ -99,8 +81,8 @@ public class Team  {
 
     }
 
-    public boolean hasTeamMeetBudgetRequirement(){
-        return getTeamCost() <= budget;
+    public boolean isTeamReady(){
+        return hasAllTeamMembers() && getTeamCost() <= budget;
     }
 
     public boolean hasAllQb() {
@@ -108,11 +90,11 @@ public class Team  {
     }
 
     public boolean hasAllRb() {
-        return rbList.size() == RB_SIZE;
+        return rbList.size() == MAX_RB_SIZE;
     }
 
     public boolean hasAllWr(){
-        return wrList.size() == WR_SIZE;
+        return wrList.size() == MAX_WR_SIZE;
     }
 
     public boolean hasAllTe(){
@@ -135,12 +117,15 @@ public class Team  {
         return qb;
     }
 
-    public void setQb(QB member) {
+    public void updateQbIfRequired(QB member) {
         if (member == null) return;
         if (qb == null) {
             qb = member;
             teamMembers.add(qb);
-        } else {
+            return;
+        }
+
+        if (member.getDollarPerPoints() < qb.getDollarPerPoints()){
             teamMembers.remove(qb);
             qb = member;
             teamMembers.add(qb);
@@ -151,15 +136,18 @@ public class Team  {
         return te;
     }
 
-    public void setTe(TE member) {
+    public void updateTeIfRequired(TE member) {
         if (member == null) return;
         if (te == null) {
-            te = member;
-            teamMembers.add(te);
-        } else {
-            teamMembers.remove(te);
-            te = member;
-            teamMembers.add(te);
+            this.te = member;
+            teamMembers.add(this.te);
+            return;
+        }
+
+        if (member.getDollarPerPoints() < te.getDollarPerPoints()){
+            teamMembers.remove(this.te);
+            this.te = member;
+            teamMembers.add(this.te);
         }
     }
 
@@ -167,12 +155,15 @@ public class Team  {
         return k;
     }
 
-    public void setK(K member) {
+    public void updateKIfRequired(K member) {
         if (member == null) return;
         if (k == null) {
             k = member;
             teamMembers.add(k);
-        } else {
+            return;
+        }
+
+        if (member.getDollarPerPoints() < k.getDollarPerPoints()){
             teamMembers.remove(k);
             k = member;
             teamMembers.add(k);
@@ -183,12 +174,15 @@ public class Team  {
         return def;
     }
 
-    public void setDef(DEF member) {
+    public void updateDefIfRequired(DEF member) {
         if (member == null) return;
         if (def == null) {
             def = member;
             teamMembers.add(def);
-        } else {
+            return;
+        }
+
+        if (member.getDollarPerPoints() < def.getDollarPerPoints()){
             teamMembers.remove(def);
             def = member;
             teamMembers.add(def);
@@ -196,11 +190,13 @@ public class Team  {
     }
 
     public List<RB> getRbList() {
+        Collections.sort(rbList, Player.DollarPerPointsComparator);
         return rbList;
     }
 
 
     public List<WR> getWrList() {
+        Collections.sort(wrList, Player.DollarPerPointsComparator);
         return wrList;
     }
 
@@ -208,7 +204,7 @@ public class Team  {
         StringBuilder builder = new StringBuilder();
         builder.append("Cost::").append(getTeamCost())
         .append("Pro Pts::").append(getTeamProjectedPoints()).append("\n");
-        if (!hasAllTeamMembers()) {
+        if (!isTeamReady()) {
             builder.append("Team is not ready yet...\n");
         }
 
@@ -235,28 +231,5 @@ public class Team  {
             builder.append(def).append("\n");
         }
         return builder.toString();
-    }
-
-    public static Comparator<Team> PointsDescComparator
-            = new Comparator<Team>() {
-        public int compare(Team t1, Team t2) {
-            return new Double(t2.getTeamProjectedPoints()).compareTo(t1.getTeamProjectedPoints());
-        }
-    };
-
-    public void setRbList(List<RB> rbList) {
-        this.rbList = rbList;
-    }
-
-    public void setWrList(List<WR> wrList) {
-        this.wrList = wrList;
-    }
-
-    public void setTeamMembers(List<Player> teamMembers) {
-        this.teamMembers = teamMembers;
-    }
-
-    public List<Player> getTeamMembers() {
-        return teamMembers;
     }
 }

@@ -7,30 +7,30 @@ import java.util.List;
 /**
  * Created by chenzheng on 15-09-10.
  */
-public class Team  {
+public class FlexTeam  {
 
     private QB qb;
     private List<RB> rbList = new ArrayList<RB>();
     private List<WR> wrList = new ArrayList<WR>();
     private TE te;
-    private K k;
     private DEF def;
+    private FLEX flex;
 
     private List<Player> teamMembers = new ArrayList<Player>();
 
-    private final double budget = 60000;
+    private final double budget = 50000;
     private final int RB_SIZE = 2;
-    private final int WR_SIZE = 3;
+    private final int WR_SIZE = 2;
 
-    public Team(){}
+    public FlexTeam(){}
 
-    public static Team cloneTeam(Team toBeCloned) {
+    public static FlexTeam cloneTeam(FlexTeam toBeCloned) {
         if (toBeCloned != null) {
-            Team newTeam = new Team();
+            FlexTeam newTeam = new FlexTeam();
             newTeam.setQb(QB.clone(toBeCloned.getQb()));
             newTeam.setDef(DEF.clone(toBeCloned.getDef()));
-            newTeam.setK(K.clone(toBeCloned.getK()));
             newTeam.setTe(TE.clone(toBeCloned.getTe()));
+            newTeam.setFlex(FLEX.clone(toBeCloned.getFlex()));
             List<RB> rbList = new ArrayList<RB>();
             for (RB rb : toBeCloned.getRbList()) {
                 rbList.add(RB.clone(rb));
@@ -77,8 +77,8 @@ public class Team  {
             total += wr.getPrice();
         }
         total += te != null ? te.getPrice() : 0;
-        total += k != null ? k.getPrice() : 0;
         total += def != null ? def.getPrice(): 0;
+        total += flex != null ? flex.getPrice():0;
         return total;
     }
 
@@ -93,8 +93,8 @@ public class Team  {
             points += wr.getProjectPoints();
         }
         points += te != null ? te.getProjectPoints() : 0;
-        points += k != null ? k.getProjectPoints() : 0;
         points += def != null ? def.getProjectPoints(): 0;
+        points += flex != null ? flex.getProjectPoints(): 0;
         return points;
 
     }
@@ -119,8 +119,8 @@ public class Team  {
         return te != null;
     }
 
-    public boolean hasAllK(){
-        return k != null;
+    public boolean hasAllFLEX(){
+        return flex != null;
     }
 
     public boolean hasAllDef() {
@@ -128,7 +128,7 @@ public class Team  {
     }
 
     public boolean hasAllTeamMembers(){
-        return hasAllQb() && hasAllRb() && hasAllWr() && hasAllTe() && hasAllK() && hasAllDef();
+        return hasAllQb() && hasAllRb() && hasAllWr() && hasAllTe() && hasAllDef() & hasAllFLEX();
     }
 
     public QB getQb() {
@@ -163,19 +163,16 @@ public class Team  {
         }
     }
 
-    public K getK() {
-        return k;
-    }
 
-    public void setK(K member) {
+    public void setFlex(FLEX member) {
         if (member == null) return;
-        if (k == null) {
-            k = member;
-            teamMembers.add(k);
+        if (flex == null) {
+            flex = member;
+            teamMembers.add(flex);
         } else {
-            teamMembers.remove(k);
-            k = member;
-            teamMembers.add(k);
+            teamMembers.remove(flex);
+            flex = member;
+            teamMembers.add(flex);
         }
     }
 
@@ -207,7 +204,7 @@ public class Team  {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Cost::").append(getTeamCost())
-        .append("Pro Pts::").append(getTeamProjectedPoints()).append("\n");
+                .append("Pro Pts::").append(getTeamProjectedPoints()).append("\n");
         if (!hasAllTeamMembers()) {
             builder.append("Team is not ready yet...\n");
         }
@@ -228,8 +225,8 @@ public class Team  {
         if (te != null) {
             builder.append(te).append("\n");
         }
-        if (k != null) {
-            builder.append(k).append("\n");
+        if (flex != null) {
+            builder.append(flex).append("\n");
         }
         if (def != null) {
             builder.append(def).append("\n");
@@ -258,5 +255,9 @@ public class Team  {
 
     public List<Player> getTeamMembers() {
         return teamMembers;
+    }
+
+    public FLEX getFlex() {
+        return flex;
     }
 }
