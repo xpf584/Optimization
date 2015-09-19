@@ -82,6 +82,21 @@ public class FlexTeam  {
         return total;
     }
 
+    public void replaceTeamMember(Player player) {
+        if (player instanceof QB) {
+            qb = (QB) player;
+        }
+        if (player instanceof DEF) {
+            def = (DEF) player;
+        }
+        if (player instanceof TE) {
+            te = (TE) player;
+        }
+        if (player instanceof RB) {
+
+        }
+    }
+
     public double getTeamProjectedPoints(){
         double points = 0;
 
@@ -203,7 +218,7 @@ public class FlexTeam  {
 
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Cost::").append(getTeamCost())
+        builder.append("Cost::").append(getTeamCost()).append("/t")
                 .append("Pro Pts::").append(getTeamProjectedPoints()).append("\n");
         if (!hasAllTeamMembers()) {
             builder.append("Team is not ready yet...\n");

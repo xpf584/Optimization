@@ -1,7 +1,5 @@
 package ca.esplendor.optimization;
 
-import javafx.geometry.Pos;
-
 import java.util.*;
 
 /**
@@ -68,30 +66,34 @@ public class PlayerData {
         return playerList;
     }
 
-
-
-
     public static void setPlayerList(List<Player> playerList) {
         PlayerData.playerList = playerList;
     }
 
-    public static void loadPlayerList(List<Map<String, String>> playerMapList){
+    public static void loadPlayerList(List<Map<String, String>> playerMapList, List<String> filteredOutTeam, Double maxRate){
         clearPlayerList();
         for (Map<String, String> map : playerMapList) {
             Position position = Position.fromCode(map.get("Pos"));
             String playerName = map.get("Player");
             if (playerName.isEmpty()) throw new RuntimeException("Player Name is Empty!");
             String priceString = map.get("Price").replace("$", "");
-            double price = priceString.isEmpty() ? 0 : new Double(priceString);
             String rateString = map.get("$/Point");
             double rate = rateString.isEmpty() ? 0 : new Double(rateString);
             String projectedPointsString = map.get("Proj Pts").replace("$", "");
             double projectedPoints =  projectedPointsString.isEmpty() ? 0 : new Double(projectedPointsString);
+            double price;
+            try {
+                price = priceString.isEmpty() ? 0 : new Double(priceString);
+            } catch (Exception e) {
+                price = rate * projectedPoints;
+            }
             String team = map.get("Team");
-            if (team.equalsIgnoreCase("NE") || team.equalsIgnoreCase("PIT") || rate >= 750) {
+            if (filteredOutTeam.contains(team)) {
                 continue;
             }
-
+            if (maxRate != null && maxRate > 0 && rate > maxRate) {
+                continue;
+            }
             if (position == Position.QB) {
                 playerList.add(new QB(playerName, price, projectedPoints, rate));
                 qbList.add(new QB(playerName, price, projectedPoints, rate));
@@ -117,6 +119,10 @@ public class PlayerData {
                 // Unknown player.
             }
         }
+    }
+
+    public static void setDesiredComparator(Comparator<Player> desiredComparator) {
+        PlayerData.desiredComparator = desiredComparator;
     }
 
     private static void clearPlayerList() {

@@ -133,6 +133,20 @@ public class Player implements Comparable<Player>{
         }
     }
 
+    public boolean isCheaperThan(Player comparingPlayer) {
+        if (comparingPlayer == null) { throw new RuntimeException("Can not compare null");}
+        if (this.getPosition() != comparingPlayer.getPosition()
+                && !(this instanceof FLEX) && !(comparingPlayer instanceof FLEX)) {
+            throw new RuntimeException("Can not compare player " + this.getPosition() + " with " + comparingPlayer.getPosition()
+                    + "Current Player " + this + " comparingPlayer " + comparingPlayer);
+        }
+        if (this.getPrice() < comparingPlayer.getPrice()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public boolean hasHigherProPointsThan(Player comparingPlayer) {
         if (comparingPlayer == null) { throw new RuntimeException("Can not compare null");}
         if (this.getPosition() != comparingPlayer.getPosition()

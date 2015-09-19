@@ -9,35 +9,37 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.*;
 
 /**
  * Created by chenzheng on 15-09-11.
  */
 public class ExcelLoader {
-    public static String inputFile = "/Users/chenzheng/Desktop/DFS Analysis.xlsx";
+    public static String inputFile = "DFS Analysis.xlsx";
     public static void  main (String[] args) throws Exception {
         ExcelLoader loader = new ExcelLoader();
 
         // load the csv into a map
-        List<Map<String, String>> mapList = loader.readCsvIntoHashMap(inputFile);
-        PlayerData.loadPlayerList(mapList);
+        List<Map<String, String>> mapList = loader.readCsvIntoHashMap(inputFile,0);
+        /*PlayerData.loadPlayerList(mapList);*/
 
     }
 
-    public static List<Map<String, String>> readCsvIntoHashMap(String inputFileName)  {
+    public static List<Map<String, String>> readCsvIntoHashMap(String inputFileName, int workSheetId)  {
         List<Map<String, String>> resultList = new ArrayList<Map<String, String>>();
         List<String> titleList = new ArrayList<String>();
 
         try
         {
-            FileInputStream file = new FileInputStream(new File(inputFileName));
+            InputStream file = ExcelLoader.class.getClassLoader().getResourceAsStream(inputFileName);
+            //FileInputStream file = new FileInputStream(new File(inputFileName));
 
             //Create Workbook instance holding reference to .xlsx file
             XSSFWorkbook workbook = new XSSFWorkbook(file);
 
             //Get first/desired sheet from the workbook
-            XSSFSheet sheet = workbook.getSheetAt(1);
+            XSSFSheet sheet = workbook.getSheetAt(workSheetId);
 
             //Iterate through each rows one by one
             Iterator<Row> rowIterator = sheet.iterator();
