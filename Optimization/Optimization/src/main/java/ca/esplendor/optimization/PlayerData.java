@@ -18,6 +18,12 @@ public class PlayerData {
     private static List<FLEX> flexList = new ArrayList<FLEX>();
     private static Comparator<Player> desiredComparator = Player.DollarPerPointsComparator;
     static {
+
+
+
+    }
+    private static void loadSampleData(){
+        clearPlayerList();
         playerList.add(new QB("Taylor, Tyrod", 5000, 295));
         playerList.add(new QB("Carr, Derek", 6300, 371));
         playerList.add(new QB("Bortles, Blake", 6400, 376));
@@ -57,9 +63,7 @@ public class PlayerData {
         playerList.add(new DEF("Arizona Cardinals", 4300, 633));
         playerList.add(new DEF("Miami Dolphins", 4700, 636));
         playerList.add(new DEF("Oakland Raiders", 4000, 637));
-
     }
-
 
     public static List<Player> getPlayerList() {
         playerList.sort(desiredComparator);

@@ -15,7 +15,8 @@ public class OptimizationProcessor {
     final static Logger log = Logger.getLogger(OptimizationProcessor.class);
     public static String[] filteredOutTeam = {"DEN", "KC"};
     public static Double maxRate = null;
-    public static void main(String args[]) {
+
+    public static void mainSlow(String args[]) {
         List<Map<String, String>> mapList = ExcelLoader.readCsvIntoHashMap(ExcelLoader.inputFile, 0);
         PlayerData.loadPlayerList(mapList, Arrays.asList(filteredOutTeam), maxRate);
         List<Player> playerList = PlayerData.getPlayerList();
@@ -229,7 +230,7 @@ public class OptimizationProcessor {
     }*/
 
 
-    public static void mainT(String args[]) {
+    public static void main(String args[]) {
         List<Map<String, String>> mapList = ExcelLoader.readCsvIntoHashMap(ExcelLoader.inputFile, 0);
 
         PlayerData.loadPlayerList(mapList, Arrays.asList(filteredOutTeam), maxRate);

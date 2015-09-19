@@ -16,7 +16,7 @@ import java.util.*;
  * Created by chenzheng on 15-09-11.
  */
 public class ExcelLoader {
-    public static String inputFile = "DFS Analysis.xlsx";
+    public static String inputFile = "DFS Analysis Week2.xlsx";
     public static void  main (String[] args) throws Exception {
         ExcelLoader loader = new ExcelLoader();
 
@@ -60,12 +60,12 @@ public class ExcelLoader {
                 for(int j = 0; j < titleList.size(); j++) {
                     map.put(titleList.get(j), rowItemList.get(j));
                 }
-                resultList.add(map);
-                /*
-                if(resultList.size() == 101) {
-                    int ii = 0;
+                if (map.get("Player") == null || ((String) map.get("Player")).isEmpty()) {
+                    break;
                 }
-                */
+                resultList.add(map);
+
+
             }
             file.close();
         }
