@@ -46,29 +46,34 @@ public class FDTeamManager {
         }
     }
 
-    public static void  replaceTeamMemberIfPossible(FDTeam team, Player newPlayer) {
+    public static boolean  replaceTeamMemberIfPossible(FDTeam team, Player newPlayer) {
+        boolean replaced = false;
         if (team.getTeamMemberNames().contains(newPlayer.getName())) {
-            return;
+            return replaced;
         }
 
         if (newPlayer.getPosition() == Position.QB) {
             if (shouldReplace(team, team.getQb(), newPlayer)
                     && isMemberReplacementWithinBudget(team, team.getQb(), newPlayer)) {
                 team.setQb((QB) newPlayer);
+                replaced = true;
             } else if (newPlayer.getPosition() == Position.DEF) {
                 if (shouldReplace(team, team.getDef(), newPlayer)
                         && isMemberReplacementWithinBudget(team, team.getDef(), newPlayer)) {
                     team.setDef((DEF) newPlayer);
+                    replaced = true;
                 }
             } else if (newPlayer.getPosition() == Position.TE) {
                 if (shouldReplace(team, team.getTe(), newPlayer)
                         && isMemberReplacementWithinBudget(team, team.getTe(), newPlayer)) {
                     team.setTe((TE) newPlayer);
+                    replaced = true;
                 }
             } else if (newPlayer.getPosition() == Position.K) {
                 if (shouldReplace(team, team.getTe(), newPlayer)
                         && isMemberReplacementWithinBudget(team, team.getK(), newPlayer)) {
                     team.setK((K) newPlayer);
+                    replaced = true;
                 }
             } /*else if (newPlayer.getPosition() == Position.RB) {
             List<RB> list = team.getRbList(Player.DollarPerPointsComparator);
@@ -84,6 +89,7 @@ public class FDTeamManager {
             team.setWrList(list);
         }*/
         }
+        return replaced;
     }
 
     public static <T extends Player> boolean shouldReplace(FDTeam team, T currentMember, T newMember) {

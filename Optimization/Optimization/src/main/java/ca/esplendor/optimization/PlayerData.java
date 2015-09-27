@@ -83,7 +83,7 @@ public class PlayerData {
             String priceString = map.get("Price").replace("$", "");
             String rateString = map.get("$/Point");
             double rate = rateString.isEmpty() ? 0 : new Double(rateString);
-            String projectedPointsString = map.get("Proj Pts").replace("$", "");
+            String projectedPointsString = map.get("FFP").replace("$", "");
             double projectedPoints =  projectedPointsString.isEmpty() ? 0 : new Double(projectedPointsString);
             double price;
             try {

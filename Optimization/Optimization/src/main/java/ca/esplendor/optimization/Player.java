@@ -102,6 +102,14 @@ public class Player implements Comparable<Player>{
         }
     };
 
+    public static Comparator<Player> DollarPerPointsAscComparator
+            = new Comparator<Player>() {
+
+        public int compare(Player p1, Player p2) {
+            return new Double(p2.getDollarPerPoints()).compareTo(p1.getDollarPerPoints());
+        }
+    };
+
 
     public static Comparator<Player> PriceComparator
             = new Comparator<Player>() {

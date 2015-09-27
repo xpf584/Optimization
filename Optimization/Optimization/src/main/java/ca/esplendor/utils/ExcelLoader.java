@@ -16,14 +16,13 @@ import java.util.*;
  * Created by chenzheng on 15-09-11.
  */
 public class ExcelLoader {
-    public static String inputFile = "DFS Analysis Week2.xlsx";
+    public static String inputFile = "DFS Analysis Week3.xlsx";
     public static void  main (String[] args) throws Exception {
         ExcelLoader loader = new ExcelLoader();
 
         // load the csv into a map
         List<Map<String, String>> mapList = loader.readCsvIntoHashMap(inputFile,0);
         /*PlayerData.loadPlayerList(mapList);*/
-
     }
 
     public static List<Map<String, String>> readCsvIntoHashMap(String inputFileName, int workSheetId)  {

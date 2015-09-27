@@ -13,11 +13,11 @@ import java.util.Map;
  */
 public class OptimizationProcessor {
     final static Logger log = Logger.getLogger(OptimizationProcessor.class);
-    public static String[] filteredOutTeam = {"DEN", "KC"};
+    public static String[] filteredOutTeam = {};
     public static Double maxRate = null;
 
-    public static void mainSlow(String args[]) {
-        List<Map<String, String>> mapList = ExcelLoader.readCsvIntoHashMap(ExcelLoader.inputFile, 0);
+    public static void main(String args[]) {
+        List<Map<String, String>> mapList = ExcelLoader.readCsvIntoHashMap(ExcelLoader.inputFile, 1);
         PlayerData.loadPlayerList(mapList, Arrays.asList(filteredOutTeam), maxRate);
         List<Player> playerList = PlayerData.getPlayerList();
         List<QB> qbList = PlayerData.getQbList();
@@ -194,9 +194,9 @@ public class OptimizationProcessor {
             .out.println(teamItem);
         }*/
 
-   /* public static void main1(String args[]) {
-        List<Map<String, String>> mapList = ExcelLoader.readCsvIntoHashMap(ExcelLoader.inputFile);
-        PlayerData.loadPlayerList(mapList);
+    public static void main1(String args[]) {
+        List<Map<String, String>> mapList = ExcelLoader.readCsvIntoHashMap(ExcelLoader.inputFile, 0);
+        PlayerData.loadPlayerList(mapList, Arrays.asList(filteredOutTeam), maxRate);
         List<Player> playerList = PlayerData.getPlayerList();
         List<FLEX> flexList = PlayerData.getFlexList();
 
@@ -227,10 +227,77 @@ public class OptimizationProcessor {
         }
 
 
+    }
+
+
+/*    wrong public static void main(String args[]) {
+        log.info("\n=====================\n");
+        log.info("\nBest Team for tab 1\n");
+        List<Map<String, String>> mapList = ExcelLoader.readCsvIntoHashMap(ExcelLoader.inputFile, 0);
+        PlayerData.loadPlayerList(mapList, Arrays.asList(filteredOutTeam), maxRate);
+        List<Player> playerList = PlayerData.getPlayerList();
+
+        UpdateTeam team = new UpdateTeam();
+        for (Player player : playerList) {
+            if (player.getPosition() == Position.RB) {
+                team.updateRbMemberIfRequired((RB) player);
+            }
+            if (player.getPosition() == Position.QB) {
+                team.updateQbIfRequired((QB) player);
+            }
+            if (player.getPosition() == Position.TE) {
+                team.updateTeIfRequired((TE) player);
+            }
+            if (player.getPosition() == Position.DEF) {
+                team.updateDefIfRequired((DEF) player);
+            }
+            if (player.getPosition() == Position.K) {
+                team.updateKIfRequired((K) player);
+            }
+            if (player.getPosition() == Position.WR) {
+                team.updateWrMemberIfRequired((WR) player);
+            }
+            if (team.isTeamReady()) {
+                log.info("\n" + team);
+            }
+        }
+
+        log.info("\n=====================\n");
+        log.info("\nBest Team for tab 2\n");
+        mapList = ExcelLoader.readCsvIntoHashMap(ExcelLoader.inputFile, 1);
+        PlayerData.loadPlayerList(mapList, Arrays.asList(filteredOutTeam), maxRate);
+        playerList = PlayerData.getPlayerList();
+
+        team = new UpdateTeam();
+        for (Player player : playerList) {
+            if (player.getPosition() == Position.RB) {
+                team.updateRbMemberIfRequired((RB) player);
+            }
+            if (player.getPosition() == Position.QB) {
+                team.updateQbIfRequired((QB) player);
+            }
+            if (player.getPosition() == Position.TE) {
+                team.updateTeIfRequired((TE) player);
+            }
+            if (player.getPosition() == Position.DEF) {
+                team.updateDefIfRequired((DEF) player);
+            }
+            if (player.getPosition() == Position.K) {
+                team.updateKIfRequired((K) player);
+            }
+            if (player.getPosition() == Position.WR) {
+                team.updateWrMemberIfRequired((WR) player);
+            }
+            if (team.isTeamReady()) {
+                log.info("\n" + team);
+            }
+        }
     }*/
 
 
-    public static void main(String args[]) {
+    public static void mainWorks(String args[]) {
+        log.info("\n=====================\n");
+        log.info("\nBest Team for tab 1\n");
         List<Map<String, String>> mapList = ExcelLoader.readCsvIntoHashMap(ExcelLoader.inputFile, 0);
 
         PlayerData.loadPlayerList(mapList, Arrays.asList(filteredOutTeam), maxRate);
@@ -255,9 +322,42 @@ public class OptimizationProcessor {
 
         playerList.sort(Player.PointsDescComparator);
         for (Player player : playerList) {
-            FDTeamManager.replaceTeamMemberIfPossible(team, player);
+            if (FDTeamManager.replaceTeamMemberIfPossible(team, player)){
+                log.info("\n" + team);
+            }
         }
-        log.info("\n" + team);
+
+        log.info("\n=====================\n");
+        log.info("\nBest Team for tab 2\n");
+
+        mapList = ExcelLoader.readCsvIntoHashMap(ExcelLoader.inputFile, 1);
+
+        PlayerData.loadPlayerList(mapList, Arrays.asList(filteredOutTeam), maxRate);
+        PlayerData.setDesiredComparator(Player.PointsDescComparator);
+        playerList = PlayerData.getPlayerList();
+        team = new FDTeam();
+        // First create the most expensive team
+        team.setQb(PlayerData.getQbList().get(0));
+        team.setTe(PlayerData.getTeList().get(0));
+        team.setDef(PlayerData.getDefList().get(0));
+        team.setK(PlayerData.getkList().get(0));
+        team.setWrList(PlayerData.getWrList().subList(0, FDTeam.MAX_WR_SIZE));
+        team.setRbList(PlayerData.getRbList().subList(0, FDTeam.MAX_RB_SIZE));
+
+        for (Player player : playerList) {
+            FDTeamManager.updateTeam(team, player);
+            if (team.isTeamReady() && team.isWithinBudget()) {
+                System.out.println(team);
+                break;
+            }
+        }
+
+        playerList.sort(Player.PointsDescComparator);
+        for (Player player : playerList) {
+            if (FDTeamManager.replaceTeamMemberIfPossible(team, player)){
+                log.info("\n" + team);
+            }
+        }
     }
 }
 

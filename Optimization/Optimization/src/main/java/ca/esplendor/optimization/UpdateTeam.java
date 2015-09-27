@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by chenzheng on 15-09-10.
  */
-public class FlexTeam2 {
+public class UpdateTeam {
 
     private QB qb;
     private List<RB> rbList = new ArrayList<RB>();
@@ -19,10 +19,10 @@ public class FlexTeam2 {
     private List<Player> teamMembers = new ArrayList<Player>();
 
     private final double budget = 60000;
-    private final int MAX_RB_SIZE = 3;
+    private final int MAX_RB_SIZE = 2;
     private final int MAX_WR_SIZE = 3;
 
-    public FlexTeam2(){}
+    public UpdateTeam(){}
 
 
     public void updateRbMemberIfRequired(RB member) {
@@ -48,20 +48,18 @@ public class FlexTeam2 {
 
     public double getTeamCost() {
         double total = 0;
-        if (!hasAllTeamMembers()) return total;
-        else {
-            total += qb != null ? qb.getPrice() : 0;
-            for (RB rb : rbList) {
-                total += rb.getPrice();
-            }
-            for (WR wr : wrList) {
-                total += wr.getPrice();
-            }
-            total += te != null ? te.getPrice() : 0;
-            total += k != null ? k.getPrice() : 0;
-            total += def != null ? def.getPrice(): 0;
-            return total;
+        total += qb != null ? qb.getPrice() : 0;
+        for (RB rb : rbList) {
+            total += rb.getPrice();
         }
+        for (WR wr : wrList) {
+            total += wr.getPrice();
+        }
+        total += te != null ? te.getPrice() : 0;
+        total += k != null ? k.getPrice() : 0;
+        total += def != null ? def.getPrice(): 0;
+        return total;
+
     }
 
     public double getTeamProjectedPoints(){
